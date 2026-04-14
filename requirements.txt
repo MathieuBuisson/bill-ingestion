@@ -1,0 +1,1 @@
+playwright\npymupdf4llm\ngoogle-api-python-client\ngoogle-auth-oauthlib\ngoogle-auth-httplib2\npython-dotenv\napscheduler
