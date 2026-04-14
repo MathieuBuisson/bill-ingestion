@@ -11,7 +11,7 @@ load_dotenv()
 class Config:
     """Application configuration."""
 
-    # Bord G��is credentials
+    # Bord Gais credentials
     BORDGAIS_EMAIL = os.getenv("BORDGAIS_EMAIL")
     BORDGAIS_PASSWORD = os.getenv("BORDGAIS_PASSWORD")
 
