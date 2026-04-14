@@ -2,13 +2,13 @@
 
 ## What this repository does
 
-Python-based automation for the ingestion of electricity bills by:
+This python-based project automates the ingestion of electricity bills by:
 
-1. Download an electricity bill from Bord Gáis Energy
-2. Upload the bill PDF file to Google Drive
-3. Convert the bill PDF to Markdown
-4. Copy the Markdown file to a personal knowledge base
-5. Send a notification email with the link and other details
+1. Downloading electricity bills from Bord Gáis Energy
+2. Converting the bill PDF file to Markdown
+3. Uploading the bill PDF file to Google Drive
+4. Copying the Markdown file to a personal knowledge base
+5. Sending a notification email with the link and other details
 
 ## Architecture
 
