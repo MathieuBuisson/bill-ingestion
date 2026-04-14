@@ -104,41 +104,32 @@ bill-ingestion/
 ├── setup.py
 │
 ├── src/
-│   └── bill_ingestion/
-│       ├── __init__.py
-│       ├── main.py                   # Entry point / orchestrator
-│       ├── config.py                 # Configuration & credentials
-│       │
-│       ├── downloaders/
-│       │   ├── __init__.py
-│       │   └── bordgais.py           # Bord Gáis bill download logic
-│       │
-│       ├── converters/
-│       │   ├── __init__.py
-│       │   └── pdf_to_markdown.py    # PDF → Markdown conversion
-│       │
-│       ├── cloud/
-│       │   ├── __init__.py
-│       │   ├── google_drive.py       # Google Drive operations
-│       │   └── gmail_service.py      # Email notification service
-│       │
-│       ├── scheduler/
-│       │   ├── __init__.py
-│       │   └── tasks.py              # Scheduled tasks
-│       │
-│       └── utils/
-│           ├── __init__.py
-│           ├── logger.py             # Logging configuration
-│           └── exceptions.py         # Custom exceptions
-│
-├── tests/
-│   ├── __init__.py
-│   ├── test_downloaders.py
-│   ├── test_converters.py
-│   └── test_cloud.py
-│
-└── docs/
-    └── DEVELOPMENT.md                # Development guide
+    └── bill_ingestion/
+        ├── __init__.py
+        ├── main.py                   # Entry point / orchestrator
+        ├── config.py                 # Configuration & credentials
+        │
+        ├── downloaders/
+        │   ├── __init__.py
+        │   └── bordgais.py           # Bord Gáis bill download logic
+        │
+        ├── converters/
+        │   ├── __init__.py
+        │   └── pdf_to_markdown.py    # PDF → Markdown conversion
+        │
+        ├── cloud/
+        │   ├── __init__.py
+        │   ├── google_drive.py       # Google Drive operations
+        │   └── gmail_service.py      # Email notification service
+        │
+        ├── scheduler/
+        │   ├── __init__.py
+        │   └── tasks.py              # Scheduled tasks
+        │
+        └── utils/
+            ├── __init__.py
+            ├── logger.py             # Logging configuration
+            └── exceptions.py         # Custom exceptions
 ```
 
 ## Usage Examples
