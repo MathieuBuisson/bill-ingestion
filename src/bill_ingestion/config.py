@@ -25,6 +25,8 @@ class Config:
     DATA_DIR = BASE_DIR / "data"
     LOGS_DIR = BASE_DIR / "logs"
     TEMP_DIR = BASE_DIR / "temp"
+    MARKDOWN_DESTINATION_FOLDER = os.getenv("MARKDOWN_DESTINATION_FOLDER")
+    MARKDOWN_DESTINATION_FOLDER = os.getenv("MARKDOWN_DESTINATION_FOLDER")
 
     # Logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
