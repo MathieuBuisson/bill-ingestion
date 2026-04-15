@@ -26,7 +26,6 @@ class Config:
     LOGS_DIR = BASE_DIR / "logs"
     TEMP_DIR = BASE_DIR / "temp"
     MARKDOWN_DESTINATION_FOLDER = os.getenv("MARKDOWN_DESTINATION_FOLDER")
-    MARKDOWN_DESTINATION_FOLDER = os.getenv("MARKDOWN_DESTINATION_FOLDER")
 
     # Logging
     LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
@@ -48,6 +47,7 @@ class Config:
             "GOOGLE_CREDENTIALS_FILE": self.GOOGLE_CREDENTIALS_FILE,
             "GOOGLE_DRIVE_FOLDER_ID": self.GOOGLE_DRIVE_FOLDER_ID,
             "NOTIFICATION_EMAIL": self.NOTIFICATION_EMAIL,
+            "MARKDOWN_DESTINATION_FOLDER": self.MARKDOWN_DESTINATION_FOLDER,
         }
 
         missing = [key for key, value in required_vars.items() if not value]
