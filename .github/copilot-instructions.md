@@ -61,6 +61,7 @@ bill-ingestion/
 
 ## Validation guidance
 
+- The code follows **PEP 8** style guidelines.
 - Confirm README setup steps still reflect actual dependency and environment requirements.
 - Confirm README accurately describes the workflow’s purpose and steps, as well as the repository structure.
 

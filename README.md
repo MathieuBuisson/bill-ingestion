@@ -203,7 +203,3 @@ When making changes:
 2. Add type hints to new functions
 3. Update tests for new functionality
 4. Update documentation as needed
-
-## License
-
-This project is private and maintained by Mathieu Buisson.
