@@ -63,7 +63,7 @@ class GmailService:
         message.set_content(content)
         message["To"] = Config.NOTIFICATION_EMAIL
         message["From"] = "me"
-        message["Subject"] = "Electricity Bill Uploaded"
+        message["Subject"] = "Electricity Bill Ingested"
 
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
         create_message = {"raw": encoded_message}

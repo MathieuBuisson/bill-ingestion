@@ -27,7 +27,7 @@ class GoogleDriveService:
         """Obtain valid Google Drive API credentials."""
         creds = None
         # Using pathlib for safe path construction
-        token_path = Config.TEMP_DIR / "drive_token.json"
+        token_path = Config.TEMP_DIR / "google_token.json"
 
         if token_path.exists():
             creds = Credentials.from_authorized_user_file(str(token_path), self.SCOPES)
