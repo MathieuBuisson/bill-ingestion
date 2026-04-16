@@ -3,6 +3,7 @@
 import io
 import os
 from typing import Dict, Any
+from datetime import datetime
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -11,7 +12,6 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 
 from bill_ingestion.config import Config
-
 
 class GoogleDriveService:
     """Service for interacting with Google Drive API."""
@@ -46,6 +46,63 @@ class GoogleDriveService:
 
         return creds
 
+    def get_or_create_folder(self, name: str, parent_id: str = None) -> str:
+        """
+        Retrieve a folder by name (optionally within a parent),
+        or create it if it does not exist.
+        Args:
+            name: Folder name
+            parent_id: Google Drive folder ID of the parent (optional)
+        Returns:
+            Folder ID (str)
+        """
+
+        # Build query
+        query = (
+            f"name = '{name}' and "
+            f"mimeType = 'application/vnd.google-apps.folder' and "
+            f"trashed = false"
+        )
+        if parent_id:
+            query += f" and '{parent_id}' in parents"
+
+        # Search for existing folder
+        results = self.service.files().list(q=query, fields="files(id, name)", spaces="drive").execute()
+        existing = results.get("files", [])
+
+        if existing:
+            return existing[0]["id"]
+
+        # Folder not found → create it
+        metadata = {
+            "name": name,
+            "mimeType": "application/vnd.google-apps.folder",
+        }
+        if parent_id:
+            metadata["parents"] = [parent_id]
+
+        folder = self.service.files().create(body=metadata, fields="id").execute()
+
+        print(f"Created folder: {name}")
+        return folder["id"]
+
+    def _get_or_create_path(self, path: list[str]) -> str:
+        parent_id = None
+        for folder in path:
+            parent_id = self.get_or_create_folder(folder, parent_id)
+        return parent_id
+
+    def _get_or_create_bill_folder(self) -> str:
+        year = str(datetime.now().year)
+
+        return self._get_or_create_path([
+            "Finance",
+            "Taxes",
+            year,
+            "Income Tax",
+            "Electricity Receipts"
+        ])
+
     def upload_file(self, filename: str, binary_data: bytes) -> str:
         """
         Uploads a file to Google Drive.
@@ -59,7 +116,7 @@ class GoogleDriveService:
         """
         file_metadata = {
             "name": filename,
-            "parents": [Config.GOOGLE_DRIVE_FOLDER_ID],
+            "parents": [self._get_or_create_bill_folder()],
         }
 
         media = MediaIoBaseUpload(

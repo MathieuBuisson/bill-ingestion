@@ -61,7 +61,6 @@ BORDGAIS_PASSWORD=your-password
 
 # Google credentials
 GOOGLE_CREDENTIALS_FILE=credentials.json
-GOOGLE_DRIVE_FOLDER_ID=your-folder-id
 NOTIFICATION_EMAIL=your-email@gmail.com
 
 # Logging
@@ -136,7 +135,6 @@ ingest_bill_workflow()
 | `BORDGAIS_EMAIL` | Bord Gáis account email | Yes |
 | `BORDGAIS_PASSWORD` | Bord Gáis account password | Yes |
 | `GOOGLE_CREDENTIALS_FILE` | Path to Google OAuth2 credentials | Yes |
-| `GOOGLE_DRIVE_FOLDER_ID` | Target Google Drive folder ID | Yes |
 | `NOTIFICATION_EMAIL` | Email to receive bill notifications | Yes |
 | `LOG_LEVEL` | Logging level (INFO, DEBUG, etc.) | No |
 

@@ -17,7 +17,6 @@ class Config:
 
     # Google credentials
     GOOGLE_CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", "credentials.json")
-    GOOGLE_DRIVE_FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
     NOTIFICATION_EMAIL = os.getenv("NOTIFICATION_EMAIL")
 
     # Paths
@@ -45,7 +44,6 @@ class Config:
             "BORDGAIS_EMAIL": self.BORDGAIS_EMAIL,
             "BORDGAIS_PASSWORD": self.BORDGAIS_PASSWORD,
             "GOOGLE_CREDENTIALS_FILE": self.GOOGLE_CREDENTIALS_FILE,
-            "GOOGLE_DRIVE_FOLDER_ID": self.GOOGLE_DRIVE_FOLDER_ID,
             "NOTIFICATION_EMAIL": self.NOTIFICATION_EMAIL,
             "MARKDOWN_DESTINATION_FOLDER": self.MARKDOWN_DESTINATION_FOLDER,
         }
