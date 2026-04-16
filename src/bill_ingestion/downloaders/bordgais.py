@@ -5,6 +5,7 @@ Bord Gáis downloader module.
 import os
 import requests
 from datetime import datetime
+from typing import Tuple
 
 from playwright.sync_api import sync_playwright
 from bill_ingestion.config import Config
@@ -12,26 +13,28 @@ from bill_ingestion.utils.logger import setup_logger
 
 logger = setup_logger(__name__)
 
+
 class BordgaisDownloader:
     """Downloader for Bord Gáis Energy bills."""
 
-    def download_bill(self) -> str:
+    def download_bill(self) -> Tuple[str, bytes]:
         """
         Logs in to Bord Gáis Energy and downloads the latest bill.
+
         Returns:
-            str: The path to the downloaded bill.
+            tuple: A tuple containing the (filename, pdf_data) where
+                   pdf_data is the bill in bytes.
         """
         current = datetime.now()
         year = current.year
         month = current.strftime('%B')
         filename = f"Electricity Bill {year} {month}.pdf"
-        download_file_path = os.path.join(Config.TEMP_DIR, filename)
-        email = os.getenv("BORDGAS_EMAIL")
-        password = os.getenv("BORDGAS_PASSWORD")
+        email = Config.BORDGAIS_EMAIL
+        password = Config.BORDGAIS_PASSWORD
 
         if not email or not password:
-            raise EnvironmentError(
-                "BORDGAS_EMAIL and BORDGAS_PASSWORD environment variables "
+            raise ValueError(
+                "BORDGAIS_EMAIL and BORDGAIS_PASSWORD configuration variables "
                 "must be set."
             )
 
@@ -71,14 +74,12 @@ class BordgaisDownloader:
                 page.wait_for_url("**/my-accounts**", timeout=15000)
 
                 # Step 2: Go to your specific account page
-                page.goto("https://www.bordgaisenergy.ie/acc-mgmt/my-accounts/" + Config.BORDGAIS_ACCOUNT_ID + "/0")
+                page.goto(f"https://www.bordgaisenergy.ie/acc-mgmt/my-accounts/{Config.BORDGAIS_ACCOUNT_ID}/0")
                 page.get_by_test_id("navigation-button-group__bills").click()
 
                 # Catch the new tab opening
                 with context.expect_page() as new_page_info:
-                    page.locator('div.latestBillSummary__download') \
-                    .get_by_test_id('download-button') \
-                    .click()
+                    page.locator('div.latestBillSummary__download').get_by_test_id('download-button').click()
 
                 new_tab = new_page_info.value
 
@@ -94,22 +95,21 @@ class BordgaisDownloader:
                     new_tab.wait_for_timeout(1000)
                     elapsed_seconds += 1
 
-                if not pdf_url:
-                    browser.close()
+                if not pdf_url["value"]:
                     raise Exception("Timed out waiting for the dynamic API call to return the PDF URL.")
 
-                logger.info(f"Captured S3 URL: {pdf_url[:80]}...")
+                logger.info(f"Captured S3 URL: {pdf_url['value'][:80]}...")
             finally:
                 browser.close()
 
         # Download the PDF using the requests library
-        logger.info("Downloading PDF...")
-        response = requests.get(pdf_url, timeout=30)
+        logger.info("Downloading PDF file from S3 URL ...")
+        response = requests.get(pdf_url["value"], timeout=30)
         response.raise_for_status() # Raises an error if the download failed
 
-        with open(download_file_path, 'wb') as f:
+        with open(filename, 'wb') as f:
             f.write(response.content)
 
-        logger.info(f"Bill saved to {download_file_path}")
+        logger.info(f"Bill saved to {filename}")
 
-        return download_file_path
+        return filename, response.content

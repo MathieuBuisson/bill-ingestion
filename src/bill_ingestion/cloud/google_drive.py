@@ -1,8 +1,6 @@
 """Google Drive service module."""
 
 import io
-import os
-from typing import Dict, Any
 from datetime import datetime
 
 from google.auth.transport.requests import Request
@@ -12,11 +10,15 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 
 from bill_ingestion.config import Config
+from bill_ingestion.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
+
 
 class GoogleDriveService:
     """Service for interacting with Google Drive API."""
 
-    SCOPES = ["https://www.googleapis.com/auth/drive.file"]
+    SCOPES = ["https://www.googleapis.com/auth/drive"]
 
     def __init__(self):
         """Initialize the Google Drive service."""
@@ -46,17 +48,18 @@ class GoogleDriveService:
 
         return creds
 
-    def get_or_create_folder(self, name: str, parent_id: str = None) -> str:
+    def get_or_create_folder(self, name: str, parent_id: str | None = None) -> str:
         """
         Retrieve a folder by name (optionally within a parent),
         or create it if it does not exist.
+
         Args:
             name: Folder name
             parent_id: Google Drive folder ID of the parent (optional)
+
         Returns:
             Folder ID (str)
         """
-
         # Build query
         query = (
             f"name = '{name}' and "
@@ -67,7 +70,11 @@ class GoogleDriveService:
             query += f" and '{parent_id}' in parents"
 
         # Search for existing folder
-        results = self.service.files().list(q=query, fields="files(id, name)", spaces="drive").execute()
+        results = (
+            self.service.files()
+            .list(q=query, fields="files(id, name)", spaces="drive")
+            .execute()
+        )
         existing = results.get("files", [])
 
         if existing:
@@ -83,16 +90,37 @@ class GoogleDriveService:
 
         folder = self.service.files().create(body=metadata, fields="id").execute()
 
-        print(f"Created folder: {name}")
+        logger.info(f"Created folder: {name}")
         return folder["id"]
 
     def _get_or_create_path(self, path: list[str]) -> str:
+        """
+        Traverse or create a nested folder hierarchy in Google Drive.
+        Each element in ``path`` is treated as a child of the previous one.
+        Folders are created on demand if they do not already exist.
+
+        Args:
+            path: Ordered list of folder names from root to leaf
+                (e.g. ``["Finance", "Taxes", "2026"]``).
+                
+        Returns:
+            The Google Drive folder ID of the deepest (leaf) folder.
+        """
         parent_id = None
         for folder in path:
             parent_id = self.get_or_create_folder(folder, parent_id)
         return parent_id
 
     def _get_or_create_bill_folder(self) -> str:
+        """
+        Retrieve or create the destination folder for electricity bills.
+        Ensures the following fixed folder hierarchy exists in Google Drive,
+        creating any missing folders along the way:
+        ``Finance / Taxes / <current year> / Income Tax / Electricity Receipts``
+
+        Returns:
+            The Google Drive folder ID of the ``Electricity Receipts`` folder.
+        """
         year = str(datetime.now().year)
 
         return self._get_or_create_path([
