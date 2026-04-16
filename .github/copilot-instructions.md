@@ -17,7 +17,6 @@ The project follows a modular architecture with clear separation of concerns:
 - **Downloaders**: Handle bill retrieval from utility providers
 - **Converters**: Transform file formats (PDF → Markdown)
 - **Cloud Services**: Manage Google Drive and Gmail operations
-- **Scheduler**: Handle recurring task execution
 - **Configuration**: Centralized settings and environment management
 
 ## Repository layout
@@ -33,7 +32,7 @@ bill-ingestion/
 ├── src/
     └── bill_ingestion/
         ├── __init__.py
-        ├── main.py                   # Entry point / orchestrator
+        ├── main.py                   # Entry point - runs the workflow
         ├── config.py                 # Configuration & credentials
         │
         ├── downloaders/
@@ -48,10 +47,6 @@ bill-ingestion/
         │   ├── __init__.py
         │   ├── google_drive.py       # Google Drive operations
         │   └── gmail_service.py      # Email notification service
-        │
-        ├── scheduler/
-        │   ├── __init__.py
-        │   └── tasks.py              # Scheduled tasks
         │
         └── utils/
             ├── __init__.py

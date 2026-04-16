@@ -19,7 +19,6 @@ The project follows a modular architecture with clear separation of concerns:
 - **Downloaders**: Handle bill retrieval from utility providers
 - **Converters**: Transform file formats (PDF → Markdown)
 - **Cloud Services**: Manage Google Drive and Gmail operations
-- **Scheduler**: Handle recurring task execution
 - **Configuration**: Centralized settings and environment management
 
 ## Prerequisites
@@ -79,18 +78,10 @@ LOG_LEVEL=INFO
 
 ### 6. Run the Workflow
 
-To run the automation workflow manually:
+Run the bill ingestion workflow:
 
 ```bash
 python -m bill_ingestion.main
-```
-
-### 7. Enable Scheduled Execution (Optional)
-
-To run the workflow automatically every 2 months on the 20th at 13:25:
-
-```bash
-python -m bill_ingestion.scheduler.tasks
 ```
 
 ## Project Structure
@@ -122,10 +113,6 @@ bill-ingestion/
         │   ├── google_drive.py       # Google Drive operations
         │   └── gmail_service.py      # Email notification service
         │
-        ├── scheduler/
-        │   ├── __init__.py
-        │   └── tasks.py              # Scheduled tasks
-        │
         └── utils/
             ├── __init__.py
             ├── logger.py             # Logging configuration
@@ -137,21 +124,9 @@ bill-ingestion/
 ### Manual Workflow Execution
 
 ```python
-from bill_ingestion.main import BillIngestionWorkflow
-from bill_ingestion.config import Config
+from bill_ingestion.main import ingest_bill_workflow
 
-config = Config()
-workflow = BillIngestionWorkflow(config)
-workflow.run()
-```
-
-### Scheduled Execution
-
-```python
-from bill_ingestion.scheduler.tasks import setup_scheduler
-
-scheduler = setup_scheduler()
-# Scheduler runs in background
+ingest_bill_workflow()
 ```
 
 ## Environment Variables
