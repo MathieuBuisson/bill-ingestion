@@ -14,6 +14,7 @@ class Config:
     # Bord Gais credentials
     BORDGAIS_EMAIL = os.getenv("BORDGAIS_EMAIL")
     BORDGAIS_PASSWORD = os.getenv("BORDGAIS_PASSWORD")
+    BORDGAIS_ACCOUNT_ID = os.getenv("BORDGAIS_ACCOUNT_ID")
 
     # Google credentials
     GOOGLE_CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", "credentials.json")
@@ -43,6 +44,7 @@ class Config:
         required_vars = {
             "BORDGAIS_EMAIL": self.BORDGAIS_EMAIL,
             "BORDGAIS_PASSWORD": self.BORDGAIS_PASSWORD,
+            "BORDGAIS_ACCOUNT_ID": self.BORDGAIS_ACCOUNT_ID,
             "GOOGLE_CREDENTIALS_FILE": self.GOOGLE_CREDENTIALS_FILE,
             "NOTIFICATION_EMAIL": self.NOTIFICATION_EMAIL,
             "MARKDOWN_DESTINATION_FOLDER": self.MARKDOWN_DESTINATION_FOLDER,

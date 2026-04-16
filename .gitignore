@@ -61,7 +61,8 @@ env/
 
 # Project specific
 .env
-credentials.json
+google_credentials.json
+google_token.json
 *.log
 logs/
 data/
