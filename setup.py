@@ -14,7 +14,6 @@ setup(
         "google-auth-oauthlib",
         "google-auth-httplib2",
         "python-dotenv",
-        "apscheduler",
     ],
     python_requires=">=3.9",
     classifiers=[
