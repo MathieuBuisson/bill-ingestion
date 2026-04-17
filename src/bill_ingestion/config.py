@@ -4,40 +4,48 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 
-# Load environment variables from .env file
-load_dotenv()
-
 
 class Config:
-    """Application configuration."""
+    """Application configuration loaded from environment variables."""
 
-    # Bord Gais credentials
-    BORDGAIS_EMAIL = os.getenv("BORDGAIS_EMAIL")
-    BORDGAIS_PASSWORD = os.getenv("BORDGAIS_PASSWORD")
-    BORDGAIS_ACCOUNT_ID = os.getenv("BORDGAIS_ACCOUNT_ID")
+    def __init__(self) -> None:
+        # Load environment variables
+        load_dotenv()
 
-    # Google credentials
-    GOOGLE_CREDENTIALS_FILE = os.getenv("GOOGLE_CREDENTIALS_FILE", "credentials.json")
-    NOTIFICATION_EMAIL = os.getenv("NOTIFICATION_EMAIL")
+        # Bord Gais credentials
+        self.BORDGAIS_EMAIL: str | None = os.getenv("BORDGAIS_EMAIL")
+        self.BORDGAIS_PASSWORD: str | None = os.getenv("BORDGAIS_PASSWORD")
+        self.BORDGAIS_ACCOUNT_ID: str | None = os.getenv("BORDGAIS_ACCOUNT_ID")
 
-    # Paths
-    BASE_DIR = Path(__file__).parent.parent.parent
-    DATA_DIR = BASE_DIR / "data"
-    LOGS_DIR = BASE_DIR / "logs"
-    TEMP_DIR = BASE_DIR / "temp"
-    MARKDOWN_DESTINATION_FOLDER = os.getenv("MARKDOWN_DESTINATION_FOLDER")
+        # Google credentials
+        self.GOOGLE_CREDENTIALS_FILE: str = os.getenv(
+            "GOOGLE_CREDENTIALS_FILE", "credentials.json"
+        )
+        self.NOTIFICATION_EMAIL: str | None = os.getenv("NOTIFICATION_EMAIL")
 
-    # Logging
-    LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+        # Paths
+        self.BASE_DIR: Path = Path(__file__).resolve().parents[2]
+        self.DATA_DIR: Path = self.BASE_DIR / "data"
+        self.LOGS_DIR: Path = self.BASE_DIR / "logs"
+        self.TEMP_DIR: Path = self.BASE_DIR / "temp"
+        self.MARKDOWN_DESTINATION_FOLDER: str | None = os.getenv(
+            "MARKDOWN_DESTINATION_FOLDER"
+        )
 
-    def __init__(self):
-        """Initialize configuration and create necessary directories."""
+        # Logging
+        self.LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
+
+        # Initialize directories
+        self._create_directories()
+
+        # Validate configuration
+        self._validate_config()
+
+    def _create_directories(self) -> None:
+        """Ensure required directories exist."""
         self.DATA_DIR.mkdir(parents=True, exist_ok=True)
         self.LOGS_DIR.mkdir(parents=True, exist_ok=True)
         self.TEMP_DIR.mkdir(parents=True, exist_ok=True)
-
-        # Validate required configuration
-        self._validate_config()
 
     def _validate_config(self) -> None:
         """Validate that all required configuration is present."""
@@ -53,6 +61,6 @@ class Config:
         missing = [key for key, value in required_vars.items() if not value]
         if missing:
             raise ValueError(
-                f"Missing required environment variables: {', '.join(missing)}. \
-                Please check your .env file or environment configuration."
+                f"Missing required environment variables: {', '.join(missing)}. "
+                "Please check your .env file or environment configuration."
             )

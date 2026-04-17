@@ -2,7 +2,6 @@
 
 import logging
 import sys
-from pathlib import Path
 from bill_ingestion.config import Config
 
 def setup_logger(name: str) -> logging.Logger:
