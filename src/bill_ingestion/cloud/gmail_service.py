@@ -16,8 +16,9 @@ class GmailService:
 
     SCOPES = ["https://www.googleapis.com/auth/gmail.send"]
 
-    def __init__(self):
+    def __init__(self, config: Config):
         """Initialize the Gmail service."""
+        self.config = config
         self.creds = self._get_credentials()
         self.service = build("gmail", "v1", credentials=self.creds)
 
@@ -25,7 +26,7 @@ class GmailService:
         """Obtain valid Gmail API credentials."""
         creds = None
         # Using pathlib to build the path safely
-        token_path = Config.TEMP_DIR / "gmail_token.json"
+        token_path = self.config.TEMP_DIR / "gmail_token.json"
 
         if token_path.exists():
             creds = Credentials.from_authorized_user_file(str(token_path), self.SCOPES)
@@ -35,7 +36,7 @@ class GmailService:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    Config.GOOGLE_CREDENTIALS_FILE, self.SCOPES
+                    self.config.GOOGLE_CREDENTIALS_FILE, self.SCOPES
                 )
                 creds = flow.run_local_server(port=0)
 
@@ -61,7 +62,7 @@ class GmailService:
         )
 
         message.set_content(content)
-        message["To"] = Config.NOTIFICATION_EMAIL
+        message["To"] = self.config.NOTIFICATION_EMAIL
         message["From"] = "me"
         message["Subject"] = "Electricity Bill Ingested"
 

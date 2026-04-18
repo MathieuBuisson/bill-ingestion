@@ -20,8 +20,9 @@ class GoogleDriveService:
 
     SCOPES = ["https://www.googleapis.com/auth/drive"]
 
-    def __init__(self):
+    def __init__(self, config: Config):
         """Initialize the Google Drive service."""
+        self.config = config
         self.creds = self._get_credentials()
         self.service = build("drive", "v3", credentials=self.creds)
 
@@ -29,7 +30,7 @@ class GoogleDriveService:
         """Obtain valid Google Drive API credentials."""
         creds = None
         # Using pathlib for safe path construction
-        token_path = Config.TEMP_DIR / "google_token.json"
+        token_path = self.config.TEMP_DIR / "google_token.json"
 
         if token_path.exists():
             creds = Credentials.from_authorized_user_file(str(token_path), self.SCOPES)
@@ -39,7 +40,7 @@ class GoogleDriveService:
                 creds.refresh(Request())
             else:
                 flow = InstalledAppFlow.from_client_secrets_file(
-                    Config.GOOGLE_CREDENTIALS_FILE, self.SCOPES
+                    self.config.GOOGLE_CREDENTIALS_FILE, self.SCOPES
                 )
                 creds = flow.run_local_server(port=0)
 

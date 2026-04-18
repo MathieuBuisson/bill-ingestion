@@ -16,6 +16,9 @@ logger = setup_logger(__name__)
 class BordgaisDownloader:
     """Downloader for Bord Gáis Energy bills."""
 
+    def __init__(self, config: Config):
+        self.config = config
+
     def download_bill(self) -> Tuple[str, bytes]:
         """
         Logs in to Bord Gáis Energy and downloads the latest bill.
@@ -28,8 +31,8 @@ class BordgaisDownloader:
         year = current.year
         month = current.strftime('%B')
         filename = f"Electricity Bill {year} {month}.pdf"
-        email = Config.BORDGAIS_EMAIL
-        password = Config.BORDGAIS_PASSWORD
+        email = self.config.BORDGAIS_EMAIL
+        password = self.config.BORDGAIS_PASSWORD
 
         if not email or not password:
             raise ValueError(
@@ -73,7 +76,10 @@ class BordgaisDownloader:
                 page.wait_for_url("**/my-accounts**", timeout=15000)
 
                 # Step 2: Go to your specific account page
-                page.goto(f"https://www.bordgaisenergy.ie/acc-mgmt/my-accounts/{Config.BORDGAIS_ACCOUNT_ID}/0")
+                page.goto(
+                    f"https://www.bordgaisenergy.ie/acc-mgmt/my-accounts/"
+                    f"{self.config.BORDGAIS_ACCOUNT_ID}/0"
+                )
                 page.get_by_test_id("navigation-button-group__bills").click()
 
                 # Catch the new tab opening
