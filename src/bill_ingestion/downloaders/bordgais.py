@@ -9,6 +9,7 @@ from typing import Tuple
 from playwright.sync_api import sync_playwright
 from bill_ingestion.config import Config
 from bill_ingestion.utils.logger import setup_logger
+from bill_ingestion.utils.exceptions import DownloadError, ConfigurationError
 
 logger = setup_logger(__name__)
 
@@ -35,7 +36,7 @@ class BordgaisDownloader:
         password = self.config.BORDGAIS_PASSWORD
 
         if not email or not password:
-            raise ValueError(
+            raise ConfigurationError(
                 "BORDGAIS_EMAIL and BORDGAIS_PASSWORD configuration variables "
                 "must be set."
             )
@@ -101,7 +102,7 @@ class BordgaisDownloader:
                     elapsed_seconds += 1
 
                 if not pdf_url["value"]:
-                    raise Exception("Timed out waiting for the dynamic API call to return the PDF URL.")
+                    raise DownloadError("Timed out waiting for the dynamic API call to return the PDF URL.")
 
                 logger.info(f"Captured S3 URL: {pdf_url['value'][:80]}...")
             finally:

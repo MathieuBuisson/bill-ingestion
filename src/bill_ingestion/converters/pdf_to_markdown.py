@@ -6,6 +6,7 @@ import tempfile
 import pymupdf4llm
 
 from bill_ingestion.config import Config
+from bill_ingestion.utils.exceptions import ConversionError
 
 
 class PDFToMarkdownConverter:
@@ -26,7 +27,7 @@ class PDFToMarkdownConverter:
             The file path where the Markdown file was saved as a string.
         """
         if not pdf_data:
-            raise ValueError("pdf_data cannot be empty")
+            raise ConversionError("pdf_data cannot be empty")
 
         # Write PDF to temporary file
         with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
@@ -37,7 +38,7 @@ class PDFToMarkdownConverter:
             # Convert PDF to Markdown
             markdown_content = pymupdf4llm.to_markdown(str(temp_pdf_path))
         except Exception as e:
-            raise RuntimeError(f"Failed to convert PDF '{filename}' to Markdown") from e
+            raise ConversionError(f"Failed to convert PDF '{filename}' to Markdown") from e
         finally:
             # Clean up the temporary PDF file
             temp_pdf_path.unlink(missing_ok=True)
@@ -46,7 +47,7 @@ class PDFToMarkdownConverter:
         md_filename = Path(filename).with_suffix(".md").name
         
         if not self.config.MARKDOWN_DESTINATION_FOLDER:
-            raise ValueError("MARKDOWN_DESTINATION_FOLDER configuration is not set.")
+            raise ConversionError("MARKDOWN_DESTINATION_FOLDER configuration is not set.")
             
         destination_dir = Path(self.config.MARKDOWN_DESTINATION_FOLDER)
         destination_dir.mkdir(parents=True, exist_ok=True)

@@ -9,6 +9,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 from bill_ingestion.config import Config
+from bill_ingestion.utils.exceptions import EmailError
 
 
 class GmailService:
@@ -69,4 +70,7 @@ class GmailService:
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
         create_message = {"raw": encoded_message}
 
-        self.service.users().messages().send(userId="me", body=create_message).execute()
+        try:
+            self.service.users().messages().send(userId="me", body=create_message).execute()
+        except Exception as e:
+            raise EmailError(f"Failed to send email notification to {self.config.NOTIFICATION_EMAIL}") from e

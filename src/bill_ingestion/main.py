@@ -9,6 +9,13 @@ from bill_ingestion.cloud.google_drive import GoogleDriveService
 from bill_ingestion.converters.pdf_to_markdown import PDFToMarkdownConverter
 from bill_ingestion.downloaders.bordgais import BordgaisDownloader
 from bill_ingestion.utils.logger import setup_logger
+from bill_ingestion.utils.exceptions import (
+    ConfigurationError,
+    ConversionError,
+    EmailError,
+    DownloadError,
+    GoogleDriveError
+)
 
 def ingest_bill_workflow(
     downloader: BordgaisDownloader,
@@ -32,7 +39,7 @@ def ingest_bill_workflow(
     logger.info("Downloading bill...")
     try:
         filename, pdf_data = downloader.download_bill()
-    except Exception:
+    except (DownloadError, ConfigurationError):
         logger.error("Failed to download the bill", exc_info=True)
         raise
     logger.info("Downloaded bill successfully: %s", filename)
@@ -41,7 +48,7 @@ def ingest_bill_workflow(
     logger.info("Uploading bill to Google Drive...")
     try:
         web_view_link = drive_service.upload_file(filename, pdf_data)
-    except Exception:
+    except GoogleDriveError:
         logger.error("Failed to upload the bill", exc_info=True)
         raise
     logger.info("Uploaded to Google Drive successfully. Link: %s", web_view_link)
@@ -50,7 +57,7 @@ def ingest_bill_workflow(
     logger.info("Converting bill to Markdown...")
     try:
         md_path = converter.convert(filename, pdf_data)
-    except Exception:
+    except ConversionError:
         logger.error("Failed to convert the bill", exc_info=True)
         raise
     logger.info("Converted to Markdown successfully. Saved at: %s", md_path)
@@ -59,7 +66,7 @@ def ingest_bill_workflow(
     logger.info("Sending notification email...")
     try:
         gmail_service.send_notification(web_view_link, filename)
-    except Exception:
+    except EmailError:
         logger.error("Failed to send notification email", exc_info=True)
         raise
     logger.info("Notification email sent successfully.")
@@ -77,7 +84,7 @@ def main() -> None:
     # 2. Initialize configuration
     try:
         config = Config()
-    except ValueError as e:
+    except ConfigurationError as e:
         logger.error("Configuration error: %s", e)
         sys.exit(1)
     except Exception:

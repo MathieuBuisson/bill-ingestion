@@ -11,6 +11,7 @@ from googleapiclient.http import MediaIoBaseUpload
 
 from bill_ingestion.config import Config
 from bill_ingestion.utils.logger import setup_logger
+from bill_ingestion.utils.exceptions import GoogleDriveError
 
 logger = setup_logger(__name__)
 
@@ -152,11 +153,14 @@ class GoogleDriveService:
             io.BytesIO(binary_data), mimetype="application/pdf", resumable=True
         )
 
-        file = (
-            self.service.files()
-            .create(body=file_metadata, media_body=media, fields="id, webViewLink")
-            .execute()
-        )
+        try:
+            file = (
+                self.service.files()
+                .create(body=file_metadata, media_body=media, fields="id, webViewLink")
+                .execute()
+            )
+        except Exception as e:
+            raise GoogleDriveError(f"Failed to upload file to Google Drive: {filename}") from e
 
         # Retrieve the generated webViewLink to share
         return file.get("webViewLink", "")
