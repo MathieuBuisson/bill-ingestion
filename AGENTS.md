@@ -1,4 +1,4 @@
-# Repository Onboarding for Copilot Agent
+# Repository Onboarding for AI Agents
 
 ## What this repository does
 
