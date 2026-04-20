@@ -26,6 +26,7 @@ class BordgaisDownloader:
 
         Returns:
             tuple: A tuple containing the (filename, pdf_data) where
+                   filename is the file name of the downloaded bill and
                    pdf_data is the bill in bytes.
         """
         current = datetime.now()
@@ -118,4 +119,4 @@ class BordgaisDownloader:
 
         logger.info(f"Bill saved to {filename}")
 
-        return filename, response.content
+        return str(filename), response.content

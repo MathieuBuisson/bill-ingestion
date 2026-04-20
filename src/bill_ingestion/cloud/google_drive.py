@@ -2,6 +2,7 @@
 
 import io
 from datetime import datetime
+from pathlib import Path
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -45,8 +46,7 @@ class GoogleDriveService:
                 )
                 creds = flow.run_local_server(port=0)
 
-            with open(token_path, "w") as token:
-                token.write(creds.to_json())
+            token_path.write_text(creds.to_json())
 
         return creds
 
@@ -63,8 +63,9 @@ class GoogleDriveService:
             Folder ID (str)
         """
         # Build query
+        sanitized_name = name.replace("\\", "\\\\").replace("'", "\\'")
         query = (
-            f"name = '{name}' and "
+            f"name = '{sanitized_name}' and "
             f"mimeType = 'application/vnd.google-apps.folder' and "
             f"trashed = false"
         )
@@ -84,7 +85,7 @@ class GoogleDriveService:
 
         # Folder not found → create it
         metadata = {
-            "name": name,
+            "name": sanitized_name,
             "mimeType": "application/vnd.google-apps.folder",
         }
         if parent_id:
@@ -92,7 +93,7 @@ class GoogleDriveService:
 
         folder = self.service.files().create(body=metadata, fields="id").execute()
 
-        logger.info(f"Created folder: {name}")
+        logger.info(f"Created folder: {sanitized_name}")
         return folder["id"]
 
     def _get_or_create_path(self, path: list[str]) -> str:
@@ -144,8 +145,11 @@ class GoogleDriveService:
         Returns:
             The webViewLink of the uploaded file.
         """
+        if Path(filename).suffix != ".pdf":
+            raise ValueError(f"filename must have a .pdf extension, got: {filename!r}")
+        
         file_metadata = {
-            "name": filename,
+            "name": Path(filename).name,
             "parents": [self._get_or_create_bill_folder()],
         }
 

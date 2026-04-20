@@ -48,7 +48,7 @@ def ingest_bill_workflow(
     logger.info("Uploading bill to Google Drive...")
     try:
         web_view_link = drive_service.upload_file(filename, pdf_data)
-    except GoogleDriveError:
+    except (GoogleDriveError, ValueError):
         logger.error("Failed to upload the bill", exc_info=True)
         raise
     logger.info("Uploaded to Google Drive successfully. Link: %s", web_view_link)

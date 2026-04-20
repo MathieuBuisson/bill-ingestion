@@ -67,3 +67,4 @@ google_token.json
 logs/
 data/
 bills/
+*workspace
