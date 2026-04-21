@@ -66,5 +66,6 @@ google_token.json
 *.log
 logs/
 data/
+temp/
 bills/
 *workspace
