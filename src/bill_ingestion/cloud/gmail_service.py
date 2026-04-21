@@ -10,6 +10,7 @@ from googleapiclient.discovery import build
 
 from bill_ingestion.config import Config
 from bill_ingestion.utils.exceptions import EmailError
+from bill_ingestion.utils.logger import setup_logger
 
 
 class GmailService:
@@ -20,8 +21,10 @@ class GmailService:
     def __init__(self, config: Config):
         """Initialize the Gmail service."""
         self.config = config
+        self.logger = setup_logger(__name__, self.config)
         self.creds = self._get_credentials()
         self.service = build("gmail", "v1", credentials=self.creds)
+        self._validate_sender()
 
     def _get_credentials(self) -> Credentials:
         """Obtain valid Gmail API credentials."""
@@ -34,8 +37,13 @@ class GmailService:
 
         if not creds or not creds.valid:
             if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
+                try:
+                    creds.refresh(Request())
+                except Exception as refresh_error:
+                    self.logger.warning(f"Token refresh failed: {refresh_error}")
+                    creds = None
+
+            if not creds:  # If we don't have valid creds, need to re-authenticate
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self.config.GOOGLE_CREDENTIALS_FILE, self.SCOPES
                 )
@@ -45,6 +53,15 @@ class GmailService:
                 token.write(creds.to_json())
 
         return creds
+
+    def _validate_sender(self):
+        """Validate that the authenticated account matches the expected sender."""
+        profile = self.service.users().getProfile(userId="me").execute()
+        if profile.get("emailAddress") != self.config.NOTIFICATION_EMAIL:
+            raise EmailError(
+                f"Authenticated account ({profile.get('emailAddress')}) "
+                f"does not match expected sender ({self.config.NOTIFICATION_EMAIL})"
+            )
 
     def send_notification(self, web_view_link: str, filename: str) -> None:
         """
@@ -68,9 +85,9 @@ class GmailService:
         message["Subject"] = "Electricity Bill Ingested"
 
         encoded_message = base64.urlsafe_b64encode(message.as_bytes()).decode()
-        create_message = {"raw": encoded_message}
+        message_payload = {"raw": encoded_message}
 
         try:
-            self.service.users().messages().send(userId="me", body=create_message).execute()
+            self.service.users().messages().send(userId="me", body=message_payload).execute()
         except Exception as e:
             raise EmailError(f"Failed to send email notification to {self.config.NOTIFICATION_EMAIL}") from e

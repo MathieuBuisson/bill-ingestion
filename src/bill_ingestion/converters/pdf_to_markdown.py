@@ -1,5 +1,6 @@
 """PDF to Markdown converter module."""
 
+import logging
 from pathlib import Path
 
 import tempfile
@@ -15,6 +16,9 @@ class PDFToMarkdownConverter:
     def __init__(self, config: Config):
         self.config = config
 
+        if not self.config.MARKDOWN_DESTINATION_FOLDER:
+            raise ConversionError("MARKDOWN_DESTINATION_FOLDER configuration is not set.")
+
     def convert(self, filename: str, pdf_data: bytes) -> str:
         """
         Converts PDF binary data to a Markdown file.
@@ -29,11 +33,15 @@ class PDFToMarkdownConverter:
         if not pdf_data:
             raise ConversionError("pdf_data cannot be empty")
 
-        # Write PDF to temporary file
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-            tmp.write(pdf_data)
-            temp_pdf_path = Path(tmp.name)
-            
+        # Write PDF to temporary file with cleanup on error
+        temp_pdf_path = None
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
+                tmp.write(pdf_data)
+                temp_pdf_path = Path(tmp.name)
+        except Exception as e:
+            raise ConversionError(f"Failed to create temporary PDF file: '{filename}'") from e
+
         try:
             # Convert PDF to Markdown
             markdown_content = pymupdf4llm.to_markdown(str(temp_pdf_path))
@@ -41,14 +49,15 @@ class PDFToMarkdownConverter:
             raise ConversionError(f"Failed to convert PDF '{filename}' to Markdown") from e
         finally:
             # Clean up the temporary PDF file
-            temp_pdf_path.unlink(missing_ok=True)
+            if temp_pdf_path and temp_pdf_path.exists():
+                try:
+                    temp_pdf_path.unlink()
+                except OSError:
+                    logging.warning(f"Failed to delete temp file: {temp_pdf_path}")
 
         # Prepare the destination path
         md_filename = Path(filename).with_suffix(".md").name
         
-        if not self.config.MARKDOWN_DESTINATION_FOLDER:
-            raise ConversionError("MARKDOWN_DESTINATION_FOLDER configuration is not set.")
-            
         destination_dir = Path(self.config.MARKDOWN_DESTINATION_FOLDER)
         destination_dir.mkdir(parents=True, exist_ok=True)
 
