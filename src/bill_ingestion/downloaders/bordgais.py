@@ -33,6 +33,7 @@ class BordgaisDownloader:
         year = current.year
         month = current.strftime('%B')
         filename = f"Electricity Bill {year} {month}.pdf"
+        file_path = self.config.DATA_DIR / filename
         email = self.config.BORDGAIS_EMAIL
         password = self.config.BORDGAIS_PASSWORD
 
@@ -114,9 +115,9 @@ class BordgaisDownloader:
         response = requests.get(pdf_url["value"], timeout=30)
         response.raise_for_status() # Raises an error if the download failed
 
-        with open(filename, 'wb') as f:
+        with open(file_path, 'wb') as f:
             f.write(response.content)
 
-        logger.info(f"Bill saved to {filename}")
+        logger.info(f"Bill saved to {file_path}")
 
         return str(filename), response.content

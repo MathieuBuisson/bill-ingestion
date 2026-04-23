@@ -8,7 +8,7 @@ This project automates the ingestion of electricity bills by:
 
 1. Downloading electricity bills from Bord Gáis Energy
 2. Converting the bill PDF to Markdown
-3. Uploading the bill PDF file to Google Drive
+3. Uploading the bill PDF file to a specific Google Drive folder (`Finance/Taxes/<YYYY>/Income Tax/Electricity Receipts`)
 4. Copying the Markdown file to a personal knowledge base
 5. Sending a notification email with the link and other details
 
@@ -58,10 +58,14 @@ Create a `.env` file in the project root:
 # Bord Gáis credentials
 BORDGAIS_EMAIL=your-email@example.com
 BORDGAIS_PASSWORD=your-password
+BORDGAIS_ACCOUNT_ID=your-account-id
 
 # Google credentials
 GOOGLE_CREDENTIALS_FILE=credentials.json
 NOTIFICATION_EMAIL=your-email@gmail.com
+
+# Paths
+MARKDOWN_DESTINATION_FOLDER=/path/to/your/knowledge/base
 
 # Logging
 LOG_LEVEL=INFO
@@ -92,6 +96,10 @@ bill-ingestion/
 ├── README.md
 ├── requirements.txt
 ├── setup.py
+│
+├── data/                             # Downloaded PDFs (runtime generated)
+├── logs/                             # Application logs (runtime generated)
+├── temp/                             # OAuth tokens and temporary files (runtime generated)
 │
 ├── src/
     └── bill_ingestion/
@@ -134,8 +142,10 @@ ingest_bill_workflow()
 |----------|-------------|----------|
 | `BORDGAIS_EMAIL` | Bord Gáis account email | Yes |
 | `BORDGAIS_PASSWORD` | Bord Gáis account password | Yes |
+| `BORDGAIS_ACCOUNT_ID` | Bord Gáis account ID | Yes |
 | `GOOGLE_CREDENTIALS_FILE` | Path to Google OAuth2 credentials | Yes |
 | `NOTIFICATION_EMAIL` | Email to receive bill notifications | Yes |
+| `MARKDOWN_DESTINATION_FOLDER` | Destination folder for converted Markdown files | Yes |
 | `LOG_LEVEL` | Logging level (INFO, DEBUG, etc.) | No |
 
 ## Security Notes

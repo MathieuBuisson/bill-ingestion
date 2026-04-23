@@ -29,6 +29,10 @@ bill-ingestion/
 ├── requirements.txt
 ├── setup.py
 │
+├── data/                             # Downloaded PDFs (runtime generated)
+├── logs/                             # Application logs (runtime generated)
+├── temp/                             # OAuth tokens and temporary files (runtime generated)
+│
 ├── src/
     └── bill_ingestion/
         ├── __init__.py
@@ -58,6 +62,7 @@ bill-ingestion/
 
 - The code follows **PEP 8** style guidelines.
 - Confirm README setup steps still reflect actual dependency and environment requirements.
+- Verify `src/bill_ingestion/config.py` for exact environment variable requirements, as they take precedence over the README.
 - Confirm README accurately describes the workflow’s purpose and steps, as well as the repository structure.
 
 ## Search guidance
