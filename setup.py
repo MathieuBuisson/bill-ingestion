@@ -11,9 +11,11 @@ setup(
         "playwright",
         "pymupdf4llm",
         "google-api-python-client",
+        "google-auth",
         "google-auth-oauthlib",
         "google-auth-httplib2",
         "python-dotenv",
+        "requests",
     ],
     python_requires=">=3.9",
     classifiers=[
