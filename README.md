@@ -124,6 +124,8 @@ bill-ingestion/
             ├── __init__.py
             ├── logger.py             # Logging configuration
             └── exceptions.py         # Custom exceptions
+│
+├── tests/                            # Unit tests for the application
 ```
 
 ## Usage Examples
@@ -186,3 +188,4 @@ When making changes:
 2. Add type hints to new functions
 3. Update tests for new functionality
 4. Update documentation as needed
+5. Run tests locally using PowerShell: `$env:PYTHONPATH="src"; python -m pytest`

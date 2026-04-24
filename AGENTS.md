@@ -56,6 +56,8 @@ bill-ingestion/
             ├── __init__.py
             ├── logger.py             # Logging configuration
             └── exceptions.py         # Custom exceptions
+│
+├── tests/                            # Unit tests for the application
 ```
 
 ## Validation guidance

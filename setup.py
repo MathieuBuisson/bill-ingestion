@@ -17,6 +17,9 @@ setup(
         "python-dotenv",
         "requests",
     ],
+    extras_require={
+        "dev": ["pytest"],
+    },
     python_requires=">=3.9",
     classifiers=[
         "Development Status :: 3 - Alpha",
