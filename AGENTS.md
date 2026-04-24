@@ -23,9 +23,13 @@ The project follows a modular architecture with clear separation of concerns:
 
 ```
 bill-ingestion/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                    # GitHub Actions CI pipeline
 ├── .env                              # Environment variables (add to .gitignore)
 ├── .gitignore
 ├── README.md
+├── pyproject.toml                    # Centralized tooling config
 ├── requirements.txt
 ├── setup.py
 │
@@ -63,6 +67,7 @@ bill-ingestion/
 ## Validation guidance
 
 - The code follows **PEP 8** style guidelines.
+- Formatting, linting, and testing configurations are centralized in `pyproject.toml`.
 - Confirm README setup steps still reflect actual dependency and environment requirements.
 - Verify `src/bill_ingestion/config.py` for exact environment variable requirements, as they take precedence over the README.
 - Confirm README accurately describes the workflow’s purpose and steps, as well as the repository structure.

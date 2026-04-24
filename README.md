@@ -23,7 +23,7 @@ The project follows a modular architecture with clear separation of concerns:
 
 ## Prerequisites
 
-- Python 3.9 or higher
+- Python 3.13 or higher
 - Google Drive and Gmail accounts with OAuth2 credentials
 - Bord Gáis online account credentials
 
@@ -91,9 +91,13 @@ python -m bill_ingestion.main
 
 ```
 bill-ingestion/
+├── .github/
+│   └── workflows/
+│       └── ci.yml                    # GitHub Actions CI pipeline
 ├── .env                              # Environment variables (add to .gitignore)
 ├── .gitignore
 ├── README.md
+├── pyproject.toml                    # Tool configurations (pytest, black, mypy, etc.)
 ├── requirements.txt
 ├── setup.py
 │

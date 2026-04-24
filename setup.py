@@ -20,13 +20,11 @@ setup(
     extras_require={
         "dev": ["pytest"],
     },
-    python_requires=">=3.9",
+    python_requires=">=3.13",
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.9",
-        "Programming Language :: Python :: 3.10",
-        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.13",
     ],
 )
