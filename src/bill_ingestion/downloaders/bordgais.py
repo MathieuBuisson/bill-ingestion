@@ -68,8 +68,8 @@ class BordgaisDownloader:
                                         self.logger.info(
                                             "Intercepted PDF URL from background API payload."
                                         )
-                            except Exception:
-                                # Safely ignore responses that aren't valid JSON
+                            except (ValueError, RuntimeError):
+                                # Ignore responses that aren't valid JSON or Playwright errors
                                 pass
 
                 # Listen to the entire context, not just the initial page
