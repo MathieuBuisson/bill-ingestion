@@ -8,6 +8,7 @@ from bill_ingestion.utils.exceptions import (
     ConfigurationError,
 )
 
+
 def test_exception_inheritance():
     """Test that all specific exceptions inherit from the base BillIngestionError."""
     assert issubclass(DownloadError, BillIngestionError)
@@ -16,12 +17,14 @@ def test_exception_inheritance():
     assert issubclass(EmailError, BillIngestionError)
     assert issubclass(ConfigurationError, BillIngestionError)
 
+
 def test_exception_instantiation():
     """Test that exceptions can be instantiated with a custom message."""
     exc = DownloadError("Test message")
     assert str(exc) == "Test message"
     assert isinstance(exc, Exception)
-    
+
+
 def test_base_exception():
     """Test the base exception behavior."""
     exc = BillIngestionError("Base error")

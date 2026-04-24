@@ -14,8 +14,9 @@ from bill_ingestion.utils.exceptions import (
     ConversionError,
     EmailError,
     DownloadError,
-    GoogleDriveError
+    GoogleDriveError,
 )
+
 
 def ingest_bill_workflow(
     downloader: BordgaisDownloader,
@@ -112,10 +113,11 @@ def main() -> None:
             converter,
             gmail_service,
             logger,
-    )
+        )
     except Exception:
         logger.error("Unexpected error during workflow.", exc_info=True)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

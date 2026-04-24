@@ -105,7 +105,7 @@ class GoogleDriveService:
         Args:
             path: Ordered list of folder names from root to leaf
                 (e.g. ``["Finance", "Taxes", "2026"]``).
-                
+
         Returns:
             The Google Drive folder ID of the deepest (leaf) folder.
         """
@@ -126,13 +126,9 @@ class GoogleDriveService:
         """
         year = str(datetime.now().year)
 
-        return self._get_or_create_path([
-            "Finance",
-            "Taxes",
-            year,
-            "Income Tax",
-            "Electricity Receipts"
-        ])
+        return self._get_or_create_path(
+            ["Finance", "Taxes", year, "Income Tax", "Electricity Receipts"]
+        )
 
     def upload_file(self, filename: str, binary_data: bytes) -> str:
         """
@@ -147,7 +143,7 @@ class GoogleDriveService:
         """
         if Path(filename).suffix != ".pdf":
             raise ValueError(f"filename must have a .pdf extension, got: {filename!r}")
-        
+
         file_metadata = {
             "name": Path(filename).name,
             "parents": [self._get_or_create_bill_folder()],
@@ -164,7 +160,9 @@ class GoogleDriveService:
                 .execute()
             )
         except Exception as e:
-            raise GoogleDriveError(f"Failed to upload file to Google Drive: {filename}") from e
+            raise GoogleDriveError(
+                f"Failed to upload file to Google Drive: {filename}"
+            ) from e
 
         # Retrieve the generated webViewLink to share
         return file.get("webViewLink", "")

@@ -18,7 +18,13 @@ setup(
         "requests",
     ],
     extras_require={
-        "dev": ["pytest"],
+        "dev": [
+            "pytest",
+            "black",
+            "pylint",
+            "mypy",
+            "bandit",
+        ],
     },
     python_requires=">=3.13",
     classifiers=[

@@ -17,7 +17,9 @@ class PDFToMarkdownConverter:
         self.config = config
 
         if not self.config.MARKDOWN_DESTINATION_FOLDER:
-            raise ConversionError("MARKDOWN_DESTINATION_FOLDER configuration is not set.")
+            raise ConversionError(
+                "MARKDOWN_DESTINATION_FOLDER configuration is not set."
+            )
 
     def convert(self, filename: str, pdf_data: bytes) -> str:
         """
@@ -40,13 +42,17 @@ class PDFToMarkdownConverter:
                 tmp.write(pdf_data)
                 temp_pdf_path = Path(tmp.name)
         except Exception as e:
-            raise ConversionError(f"Failed to create temporary PDF file: '{filename}'") from e
+            raise ConversionError(
+                f"Failed to create temporary PDF file: '{filename}'"
+            ) from e
 
         try:
             # Convert PDF to Markdown
             markdown_content = pymupdf4llm.to_markdown(str(temp_pdf_path))
         except Exception as e:
-            raise ConversionError(f"Failed to convert PDF '{filename}' to Markdown") from e
+            raise ConversionError(
+                f"Failed to convert PDF '{filename}' to Markdown"
+            ) from e
         finally:
             # Clean up the temporary PDF file
             if temp_pdf_path and temp_pdf_path.exists():
@@ -57,7 +63,7 @@ class PDFToMarkdownConverter:
 
         # Prepare the destination path
         md_filename = Path(filename).with_suffix(".md").name
-        
+
         destination_dir = Path(self.config.MARKDOWN_DESTINATION_FOLDER)
         destination_dir.mkdir(parents=True, exist_ok=True)
 

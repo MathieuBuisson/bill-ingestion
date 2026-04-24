@@ -31,7 +31,7 @@ class BordgaisDownloader:
         """
         current = datetime.now()
         year = current.year
-        month = current.strftime('%B')
+        month = current.strftime("%B")
         filename = f"Electricity Bill {year} {month}.pdf"
         file_path = self.config.DATA_DIR / filename
         email = self.config.BORDGAIS_EMAIL
@@ -56,20 +56,25 @@ class BordgaisDownloader:
 
                 def handle_response(response):
                     # Filter for XHR/Fetch requests to ignore images, CSS, and generic page loads
-                    if response.request.resource_type in ["fetch", "xhr"] and response.status == 200:
-                        if 'document' in response.url or 'bill' in response.url:
+                    if (
+                        response.request.resource_type in ["fetch", "xhr"]
+                        and response.status == 200
+                    ):
+                        if "document" in response.url or "bill" in response.url:
                             try:
                                 data = response.json()
-                                if isinstance(data, dict) and 'url' in data:
-                                    if 'amazonaws' in data['url']:
-                                        pdf_url["value"] = data['url']
-                                        logger.info("Intercepted PDF URL from background API payload.")
+                                if isinstance(data, dict) and "url" in data:
+                                    if "amazonaws" in data["url"]:
+                                        pdf_url["value"] = data["url"]
+                                        logger.info(
+                                            "Intercepted PDF URL from background API payload."
+                                        )
                             except Exception:
                                 # Safely ignore responses that aren't valid JSON
                                 pass
 
                 # Listen to the entire context, not just the initial page
-                context.on('response', handle_response)
+                context.on("response", handle_response)
 
                 # Step 1: Log in
                 page.goto("https://www.bordgaisenergy.ie/login")
@@ -87,12 +92,16 @@ class BordgaisDownloader:
 
                 # Catch the new tab opening
                 with context.expect_page() as new_page_info:
-                    page.locator('div.latestBillSummary__download').get_by_test_id('download-button').click()
+                    page.locator("div.latestBillSummary__download").get_by_test_id(
+                        "download-button"
+                    ).click()
 
                 new_tab = new_page_info.value
 
                 # Yield to the event loop while waiting for the API to resolve
-                logger.info("New tab opened. Waiting for the Next.js app to fetch the S3 URL...")
+                logger.info(
+                    "New tab opened. Waiting for the Next.js app to fetch the S3 URL..."
+                )
 
                 max_wait_seconds = 20
                 elapsed_seconds = 0
@@ -104,7 +113,9 @@ class BordgaisDownloader:
                     elapsed_seconds += 1
 
                 if not pdf_url["value"]:
-                    raise DownloadError("Timed out waiting for the dynamic API call to return the PDF URL.")
+                    raise DownloadError(
+                        "Timed out waiting for the dynamic API call to return the PDF URL."
+                    )
 
                 logger.info(f"Captured S3 URL: {pdf_url['value'][:80]}...")
             finally:
@@ -113,9 +124,9 @@ class BordgaisDownloader:
         # Download the PDF using the requests library
         logger.info("Downloading PDF file from S3 URL ...")
         response = requests.get(pdf_url["value"], timeout=30)
-        response.raise_for_status() # Raises an error if the download failed
+        response.raise_for_status()  # Raises an error if the download failed
 
-        with open(file_path, 'wb') as f:
+        with open(file_path, "wb") as f:
             f.write(response.content)
 
         logger.info(f"Bill saved to {file_path}")

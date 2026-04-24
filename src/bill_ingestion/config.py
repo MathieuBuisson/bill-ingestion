@@ -60,7 +60,11 @@ class Config:
             "MARKDOWN_DESTINATION_FOLDER": self.MARKDOWN_DESTINATION_FOLDER,
         }
 
-        missing = [key for key, value in required_vars.items() if not value or not value.strip()]
+        missing = [
+            key
+            for key, value in required_vars.items()
+            if not value or not value.strip()
+        ]
         if missing:
             raise ConfigurationError(
                 f"Missing required environment variables: {', '.join(missing)}. "

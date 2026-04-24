@@ -8,6 +8,7 @@ LOG_FORMAT = (
     "%(asctime)s - %(name)s - %(levelname)s - %(funcName)s:%(lineno)d - %(message)s"
 )
 
+
 def _build_handler(
     handler: logging.Handler,
     level: int,
@@ -17,6 +18,7 @@ def _build_handler(
     handler.setLevel(level)
     handler.setFormatter(formatter)
     return handler
+
 
 def setup_logger(name: str, config: Config) -> logging.Logger:
     """
@@ -43,12 +45,14 @@ def setup_logger(name: str, config: Config) -> logging.Logger:
     formatter = logging.Formatter(LOG_FORMAT)
     log_file = config.LOGS_DIR / "bill_ingestion.log"
 
-    console_handler = _build_handler(logging.StreamHandler(sys.stdout), level, formatter)
+    console_handler = _build_handler(
+        logging.StreamHandler(sys.stdout), level, formatter
+    )
     file_handler = _build_handler(logging.FileHandler(log_file), level, formatter)
 
     # Add handlers to logger
     if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
-        logger.addHandler(console_handler)    
+        logger.addHandler(console_handler)
     if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
         logger.addHandler(file_handler)
 

@@ -88,6 +88,10 @@ class GmailService:
         message_payload = {"raw": encoded_message}
 
         try:
-            self.service.users().messages().send(userId="me", body=message_payload).execute()
+            self.service.users().messages().send(
+                userId="me", body=message_payload
+            ).execute()
         except Exception as e:
-            raise EmailError(f"Failed to send email notification to {self.config.NOTIFICATION_EMAIL}") from e
+            raise EmailError(
+                f"Failed to send email notification to {self.config.NOTIFICATION_EMAIL}"
+            ) from e
