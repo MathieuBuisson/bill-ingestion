@@ -66,7 +66,7 @@ def ingest_bill_workflow(
     # 4. Send notification email
     logger.info("Sending notification email...")
     try:
-        gmail_service.send_notification(web_view_link, filename)
+        gmail_service.send_notification(web_view_link, filename, md_path)
     except EmailError:
         logger.error("Failed to send notification email", exc_info=True)
         raise

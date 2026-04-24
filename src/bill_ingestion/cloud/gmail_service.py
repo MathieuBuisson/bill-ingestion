@@ -65,20 +65,25 @@ class GmailService:
                 f"does not match expected sender ({self.config.NOTIFICATION_EMAIL})"
             )
 
-    def send_notification(self, web_view_link: str, filename: str) -> None:
+    def send_notification(
+        self, web_view_link: str, filename: str, md_path: str
+    ) -> None:
         """
         Sends an email notification representing successful ingestion.
 
         Args:
             web_view_link: Google Drive link for the uploaded file.
             filename: The original filename or local path.
+            md_path: The path where the Markdown file was saved.
         """
         message = EmailMessage()
 
         content = (
             "The electricity bill has been uploaded to Google Drive.\n\n"
             f"Link: {web_view_link}\n\n"
-            f"Local path: {filename}"
+            f"Local path: {filename}\n\n"
+            "A markdown version of this bill has been copied to your personal knowledge base.\n\n"
+            f"Markdown file path: {md_path}"
         )
 
         message.set_content(content)
