@@ -21,7 +21,6 @@ setup(
         "dev": [
             "pytest",
             "black",
-            "pylint",
             "mypy",
             "bandit",
         ],

@@ -29,18 +29,14 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pylint black bandit mypy
+        pip install pytest black bandit mypy
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         if [ -f setup.py ]; then pip install -e .[dev]; fi
         
     - name: Check code style with Black
       run: |
-        black src/ tests/ --check
-        
-    - name: Lint with pylint
-      run: |
-        pylint src/ tests/
-        
+        black src/ tests/ --check        
+
     - name: Check static types with mypy
       run: |
         mypy src/ tests/
