@@ -3,6 +3,7 @@
 import io
 from datetime import datetime
 from pathlib import Path
+from typing import Any, cast
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -14,8 +15,6 @@ from bill_ingestion.config import Config
 from bill_ingestion.utils.logger import setup_logger
 from bill_ingestion.utils.exceptions import GoogleDriveError
 
-logger = setup_logger(__name__)
-
 
 class GoogleDriveService:
     """Service for interacting with Google Drive API."""
@@ -25,12 +24,13 @@ class GoogleDriveService:
     def __init__(self, config: Config):
         """Initialize the Google Drive service."""
         self.config = config
+        self.logger = setup_logger(__name__, config)
         self.creds = self._get_credentials()
         self.service = build("drive", "v3", credentials=self.creds)
 
     def _get_credentials(self) -> Credentials:
         """Obtain valid Google Drive API credentials."""
-        creds = None
+        creds: Credentials | None = None
         # Using pathlib for safe path construction
         token_path = self.config.TEMP_DIR / "google_token.json"
 
@@ -81,10 +81,11 @@ class GoogleDriveService:
         existing = results.get("files", [])
 
         if existing:
-            return existing[0]["id"]
+            first_file = cast(dict[str, Any], existing[0])
+            return str(first_file["id"])
 
         # Folder not found → create it
-        metadata = {
+        metadata: dict[str, Any] = {
             "name": sanitized_name,
             "mimeType": "application/vnd.google-apps.folder",
         }
@@ -93,8 +94,9 @@ class GoogleDriveService:
 
         folder = self.service.files().create(body=metadata, fields="id").execute()
 
-        logger.info(f"Created folder: {sanitized_name}")
-        return folder["id"]
+        self.logger.info(f"Created folder: {sanitized_name}")
+        folder_id = cast(dict[str, Any], folder)
+        return str(folder_id["id"])
 
     def _get_or_create_path(self, path: list[str]) -> str:
         """
@@ -109,10 +111,10 @@ class GoogleDriveService:
         Returns:
             The Google Drive folder ID of the deepest (leaf) folder.
         """
-        parent_id = None
+        parent_id: str | None = None
         for folder in path:
             parent_id = self.get_or_create_folder(folder, parent_id)
-        return parent_id
+        return parent_id if parent_id else ""
 
     def _get_or_create_bill_folder(self) -> str:
         """
@@ -144,7 +146,7 @@ class GoogleDriveService:
         if Path(filename).suffix != ".pdf":
             raise ValueError(f"filename must have a .pdf extension, got: {filename!r}")
 
-        file_metadata = {
+        file_metadata: dict[str, Any] = {
             "name": Path(filename).name,
             "parents": [self._get_or_create_bill_folder()],
         }
@@ -165,4 +167,6 @@ class GoogleDriveService:
             ) from e
 
         # Retrieve the generated webViewLink to share
-        return file.get("webViewLink", "")
+        result = cast(dict[str, Any], file)
+        web_view_link = result.get("webViewLink")
+        return web_view_link if web_view_link else ""

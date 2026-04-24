@@ -2,6 +2,7 @@
 
 import logging
 from pathlib import Path
+from typing import cast
 
 import tempfile
 import pymupdf4llm
@@ -64,7 +65,7 @@ class PDFToMarkdownConverter:
         # Prepare the destination path
         md_filename = Path(filename).with_suffix(".md").name
 
-        destination_dir = Path(self.config.MARKDOWN_DESTINATION_FOLDER)
+        destination_dir = Path(cast(str, self.config.MARKDOWN_DESTINATION_FOLDER))
         destination_dir.mkdir(parents=True, exist_ok=True)
 
         md_path = destination_dir / md_filename

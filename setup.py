@@ -23,6 +23,7 @@ setup(
             "black",
             "mypy",
             "bandit",
+            "types-requests",
         ],
     },
     python_requires=">=3.13",

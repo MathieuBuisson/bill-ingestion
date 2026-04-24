@@ -3,6 +3,8 @@
 import base64
 from email.message import EmailMessage
 
+from typing import cast
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -28,7 +30,7 @@ class GmailService:
 
     def _get_credentials(self) -> Credentials:
         """Obtain valid Gmail API credentials."""
-        creds = None
+        creds: Credentials | None = None
         # Using pathlib to build the path safely
         token_path = self.config.TEMP_DIR / "gmail_token.json"
 

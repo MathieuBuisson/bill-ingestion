@@ -39,6 +39,7 @@ jobs:
 
     - name: Check static types with mypy
       run: |
+        mypy --install-types
         mypy src/ tests/
         
     - name: Check for security vulnerabilities with Bandit

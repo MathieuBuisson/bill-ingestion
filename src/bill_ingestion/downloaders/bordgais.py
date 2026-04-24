@@ -11,14 +11,13 @@ from bill_ingestion.config import Config
 from bill_ingestion.utils.logger import setup_logger
 from bill_ingestion.utils.exceptions import DownloadError, ConfigurationError
 
-logger = setup_logger(__name__)
-
 
 class BordgaisDownloader:
     """Downloader for Bord Gáis Energy bills."""
 
     def __init__(self, config: Config):
         self.config = config
+        self.logger = setup_logger(__name__, config)
 
     def download_bill(self) -> Tuple[str, bytes]:
         """
@@ -66,7 +65,7 @@ class BordgaisDownloader:
                                 if isinstance(data, dict) and "url" in data:
                                     if "amazonaws" in data["url"]:
                                         pdf_url["value"] = data["url"]
-                                        logger.info(
+                                        self.logger.info(
                                             "Intercepted PDF URL from background API payload."
                                         )
                             except Exception:
@@ -99,7 +98,7 @@ class BordgaisDownloader:
                 new_tab = new_page_info.value
 
                 # Yield to the event loop while waiting for the API to resolve
-                logger.info(
+                self.logger.info(
                     "New tab opened. Waiting for the Next.js app to fetch the S3 URL..."
                 )
 
@@ -117,18 +116,18 @@ class BordgaisDownloader:
                         "Timed out waiting for the dynamic API call to return the PDF URL."
                     )
 
-                logger.info(f"Captured S3 URL: {pdf_url['value'][:80]}...")
+                self.logger.info(f"Captured S3 URL: {pdf_url['value'][:80]}...")
             finally:
                 browser.close()
 
         # Download the PDF using the requests library
-        logger.info("Downloading PDF file from S3 URL ...")
+        self.logger.info("Downloading PDF file from S3 URL ...")
         response = requests.get(pdf_url["value"], timeout=30)
         response.raise_for_status()  # Raises an error if the download failed
 
         with open(file_path, "wb") as f:
             f.write(response.content)
 
-        logger.info(f"Bill saved to {file_path}")
+        self.logger.info(f"Bill saved to {file_path}")
 
         return str(filename), response.content
