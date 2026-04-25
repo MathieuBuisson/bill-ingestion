@@ -26,7 +26,6 @@ class GmailService:
         self.logger = setup_logger(__name__, self.config)
         self.creds = self._get_credentials()
         self.service = build("gmail", "v1", credentials=self.creds)
-        self._validate_sender()
 
     def _get_credentials(self) -> Credentials:
         """Obtain valid Gmail API credentials."""
@@ -55,15 +54,6 @@ class GmailService:
                 token.write(creds.to_json())
 
         return creds
-
-    def _validate_sender(self):
-        """Validate that the authenticated account matches the expected sender."""
-        profile = self.service.users().getProfile(userId="me").execute()
-        if profile.get("emailAddress") != self.config.NOTIFICATION_EMAIL:
-            raise EmailError(
-                f"Authenticated account ({profile.get('emailAddress')}) "
-                f"does not match expected sender ({self.config.NOTIFICATION_EMAIL})"
-            )
 
     def send_notification(
         self, web_view_link: str, filename: str, md_path: str
