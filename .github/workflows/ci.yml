@@ -37,7 +37,7 @@ jobs:
       run: black src/ tests/ --check
 
     - name: Check static types with mypy
-      run: mypy src/ tests/ --install-types
+      run: mypy src/ tests/ --install-types --non-interactive
         
     - name: Check for security vulnerabilities with Bandit
       run: bandit -r src/ tests/ -c pyproject.toml
