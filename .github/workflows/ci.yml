@@ -34,18 +34,13 @@ jobs:
         if [ -f setup.py ]; then pip install -e .[dev]; fi
         
     - name: Check code style with Black
-      run: |
-        black src/ tests/ --check        
+      run: black src/ tests/ --check
 
     - name: Check static types with mypy
-      run: |
-        mypy --install-types
-        mypy src/ tests/
+      run: mypy src/ tests/ --install-types
         
     - name: Check for security vulnerabilities with Bandit
-      run: |
-        bandit -r src/ tests/ -c pyproject.toml
+      run: bandit -r src/ tests/ -c pyproject.toml
         
     - name: Test with pytest
-      run: |
-        pytest
+      run: pytest
