@@ -59,7 +59,7 @@ jobs:
     - name: Increment version
       uses: saleweaver/version_increment_action@v1
       with:
-        file_path: "src/unpdf/__init__.py"
+        file_path: "src/bill_ingestion/__init__.py"
         version_key: "__version__"
 
     - name: Create a release
